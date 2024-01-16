@@ -1,19 +1,21 @@
-# syntax=docker/dockerfile:1
-FROM eclipse-temurin:21
+FROM maven:3-eclipse-temurin-21-alpine as builder
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+COPY pom.xml .
 
 COPY leasingninja-sales ./leasingninja-sales
 COPY leasingninja-riskmanagement ./leasingninja-riskmanagement
 COPY leasingninja-webapp ./leasingninja-webapp
 
-RUN ./mvnw install -Dmaven.test.skip=true
+RUN mvn install -Dmaven.test.skip=true
 
-CMD ["./mvnw", "-pl", \
-               "leasingninja-webapp", \
-               "spring-boot:run", \
-               "-Dspring-boot.run.jvmArguments=-enableassertions", \
-               "-Dspring-boot.run.arguments=--logging.level.io.leasingninja=TRACE"]
+FROM eclipse-temurin:21-jre-alpine as rt
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/leasingninja-webapp/target/leasingninja-webapp-0.0.1-SNAPSHOT.jar .
+
+EXPOSE 8080
+
+CMD [ "java", "-jar", "leasingninja-webapp-0.0.1-SNAPSHOT.jar", "-Dspring-boot.run.jvmArguments=-enableassertions", "-Dspring-boot.run.arguments=--logging.level.io.leasingninja=TRACE" ]
