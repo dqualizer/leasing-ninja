@@ -42,6 +42,7 @@
 		<module>leasingninja-sales</module>
 		<module>leasingninja-riskmanagement</module>
 		<module>leasingninja-webapp</module>
+        <module>leasingninja-riskApi</module>
 	</modules>
 
 	<dependencyManagement>
