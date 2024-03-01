@@ -5,9 +5,11 @@ import io.leasingninja.riskmanagement.domain.VoteResult;
 import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;
 import io.leasingninja.sales.domain.Contract;
+import org.jmolecules.ddd.annotation.Service;
 
 import java.util.List;
 
+@Service
 public class RiskApiService {
     public VoteResult calculateVoteResult(Contract contract) {
 

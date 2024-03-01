@@ -10,8 +10,11 @@ import io.leasingninja.sales.domain.Currency;
 import io.leasingninja.sales.domain.Customer;
 import io.leasingninja.sales.ui.ContractModel;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
+@RestController
+@RequestMapping("/api")
 public class RiskApiController {
 
     private RiskApiService riskApiService;
@@ -20,8 +23,7 @@ public class RiskApiController {
         this.riskApiService = riskApiService;
     }
 
-
-    @GetMapping("/riskmanagement_api/vote")
+    @GetMapping("/vote")
     public RiskApiResponse voteContractAutomated(ContractModel contractDto){
 
         System.out.println("test test test");
