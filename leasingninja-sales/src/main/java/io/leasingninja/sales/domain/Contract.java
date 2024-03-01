@@ -139,4 +139,7 @@ public class Contract {
 		return true;
 	}
 
+    public ContractNumber getNumber() {
+        return number;
+    }
 }

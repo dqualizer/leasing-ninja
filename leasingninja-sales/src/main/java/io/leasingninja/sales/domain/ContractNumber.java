@@ -9,4 +9,8 @@ public record ContractNumber(String number) {
 		return new ContractNumber(number);
 	}
 
+    public int toInt(){
+        return Integer.parseInt(this.number());
+    }
+
 }
