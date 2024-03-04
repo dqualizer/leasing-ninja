@@ -1,7 +1,7 @@
 package io.leasingninja.riskapi;
 
 import io.leasingninja.riskmanagement.domain.VoteResult;
-import io.leasingninja.sales.application.ViewContract;
+import io.leasingninja.sales.api.RiskApiResponse;
 import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;
 import io.leasingninja.sales.domain.Contract;
@@ -10,11 +10,9 @@ import io.leasingninja.sales.domain.Currency;
 import io.leasingninja.sales.domain.Customer;
 import io.leasingninja.sales.ui.ContractModel;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
