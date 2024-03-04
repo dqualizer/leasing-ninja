@@ -51,7 +51,7 @@ public class SalesApiController {
         headers.add("Header", "header1");
 
         // TODO change url if running inside docker, make port configurable
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8081/api/vote");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:7081/api/vote");
 
         HttpEntity<RiskRequestDto> entity = new HttpEntity<>(riskRequestDto, headers);
 
