@@ -1,5 +1,5 @@
 package io.leasingninja.sales.api;
 
-public record RiskApiResponseDto(int contractNumber, String voteResult) {
+public record RiskApiResponseDto(String contractNumber, String voteResult) {
 
 }

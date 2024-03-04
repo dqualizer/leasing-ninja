@@ -8,9 +8,4 @@ public record ContractNumber(String number) {
 	public static ContractNumber of(String number) {
 		return new ContractNumber(number);
 	}
-
-    public int toInt(){
-        return Integer.parseInt(this.number());
-    }
-
 }

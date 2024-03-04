@@ -31,7 +31,7 @@ public class RiskApiController {
         RiskRequest riskRequest = riskRequestDtoToRiskRequest(riskRequestDto);
         VoteResult isContractVoted = riskApiService.calculateVoteResult(riskRequest);
 
-        RiskApiResponseDto votedResultResponse = new RiskApiResponseDto(riskRequest.getNumber().toInt(), isContractVoted.toString());
+        RiskApiResponseDto votedResultResponse = new RiskApiResponseDto(riskRequest.getNumber().toString(), isContractVoted.toString());
 
         return votedResultResponse;
 
