@@ -4,8 +4,9 @@
  */
 module io.leasingninja.riskmanagement {
 	exports io.leasingninja.riskmanagement.application;
+    exports io.leasingninja.riskmanagement.domain;
 
-	requires org.slf4j;
+    requires org.slf4j;
 
     requires org.jmolecules.architecture.layered;
     requires org.jmolecules.ddd;
