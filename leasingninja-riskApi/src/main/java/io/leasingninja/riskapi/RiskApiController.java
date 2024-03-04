@@ -25,13 +25,13 @@ public class RiskApiController {
     }
 
     @PostMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public RiskApiResponse voteContractAutomated(@RequestBody ContractModel contractDto){
+    public RiskApiResponseDto voteContractAutomated(@RequestBody RiskRequestDto riskRequestDto){
 
         System.out.println("test test test");
         RiskRequest riskRequest = riskRequestDtoToRiskRequest(riskRequestDto);
         VoteResult isContractVoted = riskApiService.calculateVoteResult(riskRequest);
 
-        RiskApiResponse votedResultResponse = new RiskApiResponse(contract.getNumber().toInt(), isContractVoted.toString());
+        RiskApiResponseDto votedResultResponse = new RiskApiResponseDto(riskRequest.getNumber().toInt(), isContractVoted.toString());
 
         return votedResultResponse;
 

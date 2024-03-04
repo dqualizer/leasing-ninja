@@ -54,11 +54,11 @@ public class SalesApiController {
 
         HttpEntity<RiskRequestDto> entity = new HttpEntity<>(riskRequestDto, headers);
 
-        HttpEntity<RiskApiResponse> response = restTemplate.exchange(
+        HttpEntity<RiskApiResponseDto> response = restTemplate.exchange(
             builder.toUriString(),
             HttpMethod.POST,
             entity,
-            RiskApiResponse.class);
+            RiskApiResponseDto.class);
 
         return VoteResult.valueOf(response.getBody().voteResult());
 
