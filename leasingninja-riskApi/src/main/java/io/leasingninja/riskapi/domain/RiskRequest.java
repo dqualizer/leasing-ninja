@@ -1,4 +1,4 @@
-package io.leasingninja.riskapi;
+package io.leasingninja.riskapi.domain;
 
 import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;

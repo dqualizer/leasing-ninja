@@ -1,5 +1,6 @@
-package io.leasingninja.riskapi;
+package io.leasingninja.riskapi.domain;
 
+import io.leasingninja.riskapi.domain.RiskRequest;
 import io.leasingninja.riskmanagement.domain.CreditRating;
 import io.leasingninja.riskmanagement.domain.VoteResult;
 import io.leasingninja.sales.domain.Amount;

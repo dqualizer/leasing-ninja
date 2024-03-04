@@ -1,5 +1,7 @@
-package io.leasingninja.riskapi;
+package io.leasingninja.riskapi.api;
 
+import io.leasingninja.riskapi.domain.RiskApiService;
+import io.leasingninja.riskapi.domain.RiskRequest;
 import io.leasingninja.riskmanagement.domain.VoteResult;
 import io.leasingninja.sales.api.RiskApiResponseDto;
 import io.leasingninja.sales.api.RiskRequestDto;

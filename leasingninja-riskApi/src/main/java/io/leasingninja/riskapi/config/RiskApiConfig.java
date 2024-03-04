@@ -1,5 +1,6 @@
-package io.leasingninja.riskapi;
+package io.leasingninja.riskapi.config;
 
+import io.leasingninja.riskapi.domain.RiskApiService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
