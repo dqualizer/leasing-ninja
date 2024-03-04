@@ -5,6 +5,7 @@ import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;
 import io.leasingninja.sales.domain.Contract;
 import io.leasingninja.sales.domain.ContractNumber;
+import io.leasingninja.sales.domain.Contracts;
 import io.leasingninja.sales.domain.Currency;
 import io.leasingninja.sales.domain.Customer;
 import io.leasingninja.sales.domain.Interest;
@@ -24,7 +25,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 public class SalesApiController {
 
-    public SalesApiController() {
+    // this probably does not adhere to intended architecture of LeasingNinja
+    private final Contracts contractRepository;
+    public SalesApiController(Contracts contractRepository) {
+        this.contractRepository = contractRepository;
     }
 
     @PostMapping(value = "/contract", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,8 +38,8 @@ public class SalesApiController {
         Interest interest = Interest.of(4.5);
         contract.calculateInstallmentFor(LeaseTerm.ofMonths(contractRequestDto.leaseTerms()), interest);
         VoteResult voteResultFromApi = getVoteResultFromRiskApi(contractRequestToRiskRequestDto(contract));
+        contractRepository.save(contract);
 
-        //TODO save contract to Repo
         return new SalesApiResponseDto(contract.number().number(), contract.lessee().toString(), contract.car().toString(), contract.leaseTerm().noOfMonths(), contract.installment().amount(), voteResultFromApi.name());
     }
 
