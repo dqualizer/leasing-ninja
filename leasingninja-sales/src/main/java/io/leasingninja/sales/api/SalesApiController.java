@@ -69,7 +69,8 @@ public class SalesApiController {
             contract.lessee().toString(),
             contract.car().toString(),
             contract.price().amount(),
-            contract.installment().amount());
+            contract.installment().amount(),
+            contract.getCurrency().toString());
         return riskRequestDto;
     }
 
