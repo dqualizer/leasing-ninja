@@ -30,9 +30,6 @@ public class SalesApiController {
     @PostMapping(value = "/contract", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SalesApiResponseDto tryToCreateContractOfferAutomated(@RequestBody ContractRequestDto contractRequestDto){
 
-        // assumes contractDto is sent to API without price, which needs to be calculated here
-        // TODO define own API Dto instead
-
         Contract contract = contractRequestDtoToContract(contractRequestDto);
         Interest interest = Interest.of(4.5);
         contract.calculateInstallmentFor(LeaseTerm.ofMonths(contractRequestDto.leaseTerms()), interest);
