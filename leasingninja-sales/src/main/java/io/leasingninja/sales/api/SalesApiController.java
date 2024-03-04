@@ -35,7 +35,7 @@ public class SalesApiController {
 
         Contract contract = contractRequestDtoToContract(contractRequestDto);
         Interest interest = Interest.of(4.5);
-        contract.calculateInstallmentFor(LeaseTerm.ofMonths(contractRequestDto.leaseTearms()), interest);
+        contract.calculateInstallmentFor(LeaseTerm.ofMonths(contractRequestDto.leaseTerms()), interest);
         VoteResult voteResultFromApi = getVoteResultFromRiskApi(contractRequestToRiskRequestDto(contract));
 
         //TODO save contract to Repo
@@ -74,14 +74,14 @@ public class SalesApiController {
         return riskRequestDto;
     }
 
-    private Contract contractRequestDtoToContract(ContractRequestDto contractDto){
+    private Contract contractRequestDtoToContract(ContractRequestDto contractRequestDto){
 
-        ContractNumber contractNumber = ContractNumber.of(contractDto.number());
-        Customer customer = Customer.of(contractDto.lessee());
-        Car car = Car.of(contractDto.car());
-        Amount price = Amount.of(contractDto
-            .carPrice(), Currency.valueOf(contractDto.currency()));
+        ContractNumber contractNumber = ContractNumber.of(contractRequestDto.number());
+        Customer customer = Customer.of(contractRequestDto.lessee());
+        Car car = Car.of(contractRequestDto.car());
+        Amount buyingPriceCar = Amount.of(contractRequestDto
+            .buyingPriceCar(), Currency.valueOf(contractRequestDto.currency()));
 
-        return new Contract(contractNumber, customer, car, price);
+        return new Contract(contractNumber, customer, car, buyingPriceCar);
     }
 }
