@@ -151,7 +151,4 @@ public class Contract {
         return buyingPriceCar.currency();
     }
 
-    public void setCalculation(Optional<Calculation> calculation) {
-        this.calculation = calculation;
-    }
 }

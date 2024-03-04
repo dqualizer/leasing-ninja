@@ -4,17 +4,19 @@ import io.leasingninja.riskmanagement.domain.CreditRating;
 import io.leasingninja.riskmanagement.domain.VoteResult;
 import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;
-import io.leasingninja.sales.domain.Contract;
 import org.jmolecules.ddd.annotation.Service;
 
 import java.util.List;
 
+/**
+* All calculations are based on fantasy and do not depict real domain knowledge
+* */
 @Service
 public class RiskApiService {
-    public VoteResult calculateVoteResult(Contract contract) {
+    public VoteResult calculateVoteResult(RiskRequest riskRequest) {
 
-        CreditRating creditRating = calculateCreditRating(contract.price(), contract.car());
-        Amount resaleValue = calculateResaleValue(contract.price(), contract.car());
+        CreditRating creditRating = calculateCreditRating(riskRequest.getInstallment(), riskRequest.getCar());
+        Amount resaleValue = calculateResaleValue(riskRequest.getBuyingPriceCar(), riskRequest.getCar());
 
         if (creditRating.value() >= 7 && resaleValue.amount() <= 10000) {
             return VoteResult.ACCEPTED;
@@ -26,15 +28,16 @@ public class RiskApiService {
 
     }
 
-    private CreditRating calculateCreditRating(Amount price, Car car) {
+    private CreditRating calculateCreditRating(Amount installmentRate, Car car) {
 
-        double rating = (price.amount() / 10000) * car.toString().length();
+        double rating = (installmentRate.amount() / 1000) * car.toString().length();
         rating = Math.max(1, Math.min(10, rating));
         int roundedRating = (int) Math.round(rating);
 
         return CreditRating.of(roundedRating);
     }
 
+    // would make sense to additionally consider the amount of lease terms
     private Amount calculateResaleValue(Amount price, Car car){
 
         List<String> expensiveCars = List.of("mercedes", "lexus", "jaguar", "ferrari", "maserati");

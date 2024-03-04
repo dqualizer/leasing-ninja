@@ -1,14 +1,13 @@
 package io.leasingninja.riskapi;
 
 import io.leasingninja.riskmanagement.domain.VoteResult;
-import io.leasingninja.sales.api.RiskApiResponse;
+import io.leasingninja.sales.api.RiskApiResponseDto;
+import io.leasingninja.sales.api.RiskRequestDto;
 import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;
-import io.leasingninja.sales.domain.Contract;
 import io.leasingninja.sales.domain.ContractNumber;
 import io.leasingninja.sales.domain.Currency;
 import io.leasingninja.sales.domain.Customer;
-import io.leasingninja.sales.ui.ContractModel;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +28,8 @@ public class RiskApiController {
     public RiskApiResponse voteContractAutomated(@RequestBody ContractModel contractDto){
 
         System.out.println("test test test");
-        Contract contract = contractDtoToContract(contractDto);
-        VoteResult isContractVoted = riskApiService.calculateVoteResult(contract);
+        RiskRequest riskRequest = riskRequestDtoToRiskRequest(riskRequestDto);
+        VoteResult isContractVoted = riskApiService.calculateVoteResult(riskRequest);
 
         RiskApiResponse votedResultResponse = new RiskApiResponse(contract.getNumber().toInt(), isContractVoted.toString());
 
@@ -40,14 +39,17 @@ public class RiskApiController {
 
 
 
-    private Contract contractDtoToContract(ContractModel contractDto){
+    private RiskRequest riskRequestDtoToRiskRequest(RiskRequestDto riskRequestDto){
 
-        ContractNumber contractNumber = ContractNumber.of(contractDto.number);
-        Customer customer = Customer.of(contractDto.lessee);
-        Car car = Car.of(contractDto.car);
-        Amount price = Amount.of(contractDto
-            .price_amount, Currency.valueOf(contractDto.price_currency));
+        ContractNumber contractNumber = ContractNumber.of(riskRequestDto.number());
+        Customer customer = Customer.of(riskRequestDto.lessee());
+        Car car = Car.of(riskRequestDto.car());
+        Amount price = Amount.of(riskRequestDto
+            .buyingPriceCar(), Currency.valueOf(riskRequestDto.currency()));
+        Amount installment = Amount.of(riskRequestDto
+            .installment(), Currency.valueOf(riskRequestDto.currency()));
 
-        return new Contract(contractNumber, customer, car, price);
+        RiskRequest riskRequest = new RiskRequest(contractNumber, customer, car, price, installment);
+        return riskRequest;
     }
 }
