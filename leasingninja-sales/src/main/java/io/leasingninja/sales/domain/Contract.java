@@ -15,23 +15,23 @@ public class Contract {
 
 	private final Customer lessee;
 	private final Car car;
-	private final Amount price;
+	private final Amount buyingPriceCar;
 
 	private record Calculation(LeaseTerm leaseTerm, Interest interest, Amount installment) {}
     private Optional<Calculation> calculation;
 
     private Optional<SignDate> signDate;
 
-	public Contract(ContractNumber number, Customer lessee, Car car, Amount price) {
+	public Contract(ContractNumber number, Customer lessee, Car car, Amount buyingPriceCar) {
         requireNonNull(number);
 		requireNonNull(lessee);
 		requireNonNull(car);
-		requireNonNull(price);
+		requireNonNull(buyingPriceCar);
 
         this.number = number;
 		this.lessee = lessee;
 		this.car = car;
-		this.price = price;
+		this.buyingPriceCar = buyingPriceCar;
 		this.calculation = Optional.empty();
 		this.signDate = Optional.empty();
 	}
@@ -50,7 +50,7 @@ public class Contract {
 	}
 
 	public Amount price() {
-		return this.price;
+		return this.buyingPriceCar;
 	}
 
 	public boolean isCalculated() {
@@ -72,7 +72,7 @@ public class Contract {
 			residualValue,
 			inAdvance);
 
-		this.calculation = Optional.of(new Calculation(leaseTerm, interest, Amount.of(pmt, price.currency())));
+		this.calculation = Optional.of(new Calculation(leaseTerm, interest, Amount.of(pmt, buyingPriceCar.currency())));
 
 		assert isCalculated();
 	}
@@ -114,7 +114,7 @@ public class Contract {
 	@Override
 	public String toString() {
 		return "Contract [number=" + number() + ", lessee=" + this.lessee + ", car=" + this.car
-				+ ", price=" + this.price + ", signDate=" + this.signDate + "]";
+				+ ", price=" + this.buyingPriceCar + ", signDate=" + this.signDate + "]";
 	}
 
 	@Override
@@ -141,5 +141,17 @@ public class Contract {
 
     public ContractNumber getNumber() {
         return number;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public Currency getCurrency() {
+        return buyingPriceCar.currency();
+    }
+
+    public void setCalculation(Optional<Calculation> calculation) {
+        this.calculation = calculation;
     }
 }
