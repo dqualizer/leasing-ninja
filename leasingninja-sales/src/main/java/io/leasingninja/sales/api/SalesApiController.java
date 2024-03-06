@@ -13,13 +13,18 @@ import io.leasingninja.sales.domain.LeaseTerm;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.ConnectException;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +37,15 @@ public class SalesApiController {
     }
 
     @PostMapping(value = "/contract", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public SalesApiResponseDto tryToCreateContractOfferAutomated(@RequestBody ContractRequestDto contractRequestDto){
+    public SalesApiResponseDto tryToCreateContractOfferAutomated(@RequestBody ContractRequestDto contractRequestDto, @RequestHeader HttpHeaders headers){
+
+        System.out.println("Received Request");
+
+
+        System.out.println("Request Body: " + contractRequestDto);
+        System.out.println("Request Headers:");
+        headers.forEach((key, value) -> System.out.println(key + ":" + value));
+
 
         Contract contract = contractRequestDtoToContract(contractRequestDto);
         Interest interest = Interest.of(4.5);
@@ -40,9 +53,12 @@ public class SalesApiController {
         VoteResult voteResultFromApi = getVoteResultFromRiskApi(contractRequestToRiskRequestDto(contract));
         contractRepository.save(contract);
 
+        System.out.println("Responding to Request");
         return new SalesApiResponseDto(contract.number().number(), contract.lessee().toString(), contract.car().toString(), contract.leaseTerm().noOfMonths(), contract.installment().amount(), voteResultFromApi.name());
+
     }
 
+    @Retryable(maxAttempts = 4, include = {ConnectException.class}, backoff = @Backoff(delay = 1000))
     private VoteResult getVoteResultFromRiskApi(RiskRequestDto riskRequestDto) {
         RestTemplate restTemplate = new RestTemplate();
 

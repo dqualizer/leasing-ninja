@@ -41,6 +41,7 @@ module io.leasingninja.sales {
 //    requires com.fasterxml.jackson.databind;
 //    requires transitive com.fasterxml.jackson.core;
     requires com.google.gson;
+    requires spring.retry;
 }
 
 
