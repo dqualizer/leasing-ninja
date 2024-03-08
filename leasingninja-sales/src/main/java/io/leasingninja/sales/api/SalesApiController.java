@@ -30,9 +30,11 @@ import java.net.ConnectException;
 @RequestMapping("/api")
 public class SalesApiController {
 
+    private final OutboundCommService outboundCommService;
     // this probably does not adhere to intended architecture of LeasingNinja
     private final Contracts contractRepository;
-    public SalesApiController(Contracts contractRepository) {
+    public SalesApiController(OutboundCommService outboundCommService, Contracts contractRepository) {
+        this.outboundCommService = outboundCommService;
         this.contractRepository = contractRepository;
     }
 
@@ -50,34 +52,11 @@ public class SalesApiController {
         Contract contract = contractRequestDtoToContract(contractRequestDto);
         Interest interest = Interest.of(4.5);
         contract.calculateInstallmentFor(LeaseTerm.ofMonths(contractRequestDto.leaseTerms()), interest);
-        VoteResult voteResultFromApi = getVoteResultFromRiskApi(contractRequestToRiskRequestDto(contract));
+        VoteResult voteResultFromApi = outboundCommService.getVoteResultFromRiskApi(contractRequestToRiskRequestDto(contract));
         contractRepository.save(contract);
 
         System.out.println("Responding to Request");
         return new SalesApiResponseDto(contract.number().number(), contract.lessee().toString(), contract.car().toString(), contract.leaseTerm().noOfMonths(), contract.installment().amount(), voteResultFromApi.name());
-
-    }
-
-    @Retryable(maxAttempts = 4, include = {ConnectException.class}, backoff = @Backoff(delay = 1000))
-    private VoteResult getVoteResultFromRiskApi(RiskRequestDto riskRequestDto) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Header", "header1");
-
-        // TODO change url if running inside docker, make port configurable
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:7081/api/vote");
-
-        HttpEntity<RiskRequestDto> entity = new HttpEntity<>(riskRequestDto, headers);
-
-        HttpEntity<RiskApiResponseDto> response = restTemplate.exchange(
-            builder.toUriString(),
-            HttpMethod.POST,
-            entity,
-            RiskApiResponseDto.class);
-
-        return VoteResult.valueOf(response.getBody().voteResult());
 
     }
 

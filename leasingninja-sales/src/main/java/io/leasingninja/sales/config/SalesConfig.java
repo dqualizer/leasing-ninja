@@ -1,5 +1,6 @@
 package io.leasingninja.sales.config;
 
+import io.leasingninja.sales.api.OutboundCommService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,5 +40,8 @@ public class SalesConfig {
 	public ViewContract salesViewContract(Contracts contracts) {
 		return new ViewContract(contracts);
 	}
+
+    @Bean
+    public OutboundCommService outboundCommService(){return new OutboundCommService();}
 
 }
