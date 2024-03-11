@@ -53,7 +53,10 @@ public class SalesApiController {
         Interest interest = Interest.of(4.5);
         contract.calculateInstallmentFor(LeaseTerm.ofMonths(contractRequestDto.leaseTerms()), interest);
         VoteResult voteResultFromApi = outboundCommService.getVoteResultFromRiskApi(contractRequestToRiskRequestDto(contract));
-        contractRepository.save(contract);
+
+        if (voteResultFromApi.equals(VoteResult.ACCEPTED)){
+            contractRepository.save(contract);
+        }
 
         System.out.println("Responding to Request");
         return new SalesApiResponseDto(contract.number().number(), contract.lessee().toString(), contract.car().toString(), contract.leaseTerm().noOfMonths(), contract.installment().amount(), voteResultFromApi.name());
