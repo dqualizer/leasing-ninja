@@ -5,7 +5,7 @@ import io.leasingninja.riskmanagement.domain.CreditRating;
 import io.leasingninja.riskmanagement.domain.VoteResult;
 import io.leasingninja.sales.domain.Amount;
 import io.leasingninja.sales.domain.Car;
-import org.jmolecules.ddd.annotation.Service;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
