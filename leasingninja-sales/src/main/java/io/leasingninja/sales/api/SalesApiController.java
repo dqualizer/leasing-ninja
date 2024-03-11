@@ -39,7 +39,7 @@ public class SalesApiController {
     }
 
     @PostMapping(value = "/contract", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public SalesApiResponseDto tryToCreateContractOfferAutomated(@RequestBody ContractRequestDto contractRequestDto, @RequestHeader HttpHeaders headers){
+    public SalesApiResponseDto tryToCreateContractOfferAutomated(@RequestBody ContractRequestDto contractRequestDto, @RequestHeader HttpHeaders headers) throws InterruptedException {
 
         System.out.println("Received Request");
 
@@ -58,6 +58,8 @@ public class SalesApiController {
             contractRepository.save(contract);
         }
 
+        // introduce delay to bring them response times to a scale where the noise due to available local system performance is much smaller
+        Thread.sleep(400);
         System.out.println("Responding to Request");
         return new SalesApiResponseDto(contract.number().number(), contract.lessee().toString(), contract.car().toString(), contract.leaseTerm().noOfMonths(), contract.installment().amount(), voteResultFromApi.name());
 
