@@ -156,12 +156,12 @@ jobs:
       - name: Print Tag 1 Arrays
         run: |
           echo "Tag 1 Array :"
-          echo "${{ fromJSON(steps.meta_tag1.outputs.json).tags"
+          echo "${{ fromJSON(steps.meta_tag1.outputs.json).tags }}"
 
       - name: Print Tag 2 Arrays
         run: |
           echo "Tag 2 Array :"
-          echo "${{ fromJSON(steps.meta_tag2.outputs.json).tags"
+          echo "${{ fromJSON(steps.meta_tag2.outputs.json).tags }}"
 
       - name: Print Tag 1 Array Elements
         run: |
