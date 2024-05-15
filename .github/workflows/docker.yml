@@ -75,7 +75,7 @@ jobs:
       - name: Upload Digest Tag 1
         uses: actions/upload-artifact@v3
         with:
-          name: digests_tag1
+          name: digest_tag1
           path: /tmp/digests/tag1/*
           if-no-files-found: error
           retention-days: 1
@@ -99,7 +99,7 @@ jobs:
       -   name: Upload Digest Tag 2
           uses: actions/upload-artifact@v3
           with:
-              name: digests_tag2
+              name: digest_tag2
               path: /tmp/digests/tag2/*
               if-no-files-found: error
               retention-days: 1
@@ -112,13 +112,13 @@ jobs:
       - name: Download Digests Tag 1
         uses: actions/download-artifact@v3
         with:
-          name: digests
+          name: digest_tag2
           path: /tmp/digests/tag1
 
       -   name: Download Digests Tag 2
           uses: actions/download-artifact@v3
           with:
-              name: digests
+              name: digest_tag2
               path: /tmp/digests/tag2
 
       - name: Set up Docker Buildx
