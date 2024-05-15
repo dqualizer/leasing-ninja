@@ -1,213 +1,62 @@
 name: Create and publish a Docker image
 
 on:
-  push:
-    branches: ["**"] # run for any commit or tag push on any branch
-    tags-ignore: ["v**"] # reserve v* tags for releases
-  pull_request:
-    types: [opened, ready_for_review] # only trigger when PR is opened or set on ready_for_review
-  release:
-    types: [published] # will use tag name regardless of naming
-
-env:
-  REGISTRY: ghcr.io
-  REGISTRY_IMAGE: dqualizer/leasing-ninja
+    push:
+        branches: ["**"] # run for any commit or tag push on any branch
+        tags-ignore: ["v**"] # reserve v* tags for releases
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
-          - linux/arm64/v8
-    steps:
-      - name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+    build-and-push-image:
+        name: Build and publish docker images
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - image: ghcr.io/${{ github.repository }}-webapp
+                      target: leasingNinja-webapp
+                    - image: ghcr.io/${{ github.repository }}-riskapi
+                      target: leasingNinja-riskApi
+        permissions:
+            contents: read
+            packages: write
 
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Docker Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY_IMAGE }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v3
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+            - name: Set up Docker Buildx
+              id: buildx
+              uses: docker/setup-buildx-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ matrix.image }}
+                  tags: |
+                      type=ref,event=branch
+                      type=ref,event=tag
+                      type=ref,event=pr
+                      type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
-      - name: Build and Push Digest Tag 1
-        id: build_tag_1
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          target: leasingNinja-webapp
-          platforms: ${{ matrix.platform }}
-          labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ steps.meta.outputs.tags }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/webapp,name-canonical=true,push=true
-
-      - name: Export Digest Tag 1
-        run: |
-          mkdir -p /tmp/digests/tag1
-          digest="${{ steps.build_tag_1.outputs.digest }}"
-          touch "/tmp/digests/tag1/${digest#sha256:}"
-
-      - name: Upload Digest Tag 1
-        uses: actions/upload-artifact@v3
-        with:
-          name: digest_tag1
-          path: /tmp/digests/tag1/*
-          if-no-files-found: error
-          retention-days: 1
-
-      -   name: Build and Push Digest Tag 2
-          id: build_tag_2
-          uses: docker/build-push-action@v5
-          with:
-              context: .
-              target: leasingNinja-riskApi
-              platforms: ${{ matrix.platform }}
-              labels: ${{ steps.meta.outputs.labels }}
-              tags: ${{ steps.meta.outputs.tags }}
-              outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/riskapi,name-canonical=true,push=true
-
-      -   name: Export Digest Tag 2
-          run: |
-              mkdir -p /tmp/digests/tag2
-              digest="${{ steps.build_tag_2.outputs.digest }}"
-              touch "/tmp/digests/tag2/${digest#sha256:}"
-
-      -   name: Upload Digest Tag 2
-          uses: actions/upload-artifact@v3
-          with:
-              name: digest_tag2
-              path: /tmp/digests/tag2/*
-              if-no-files-found: error
-              retention-days: 1
-
-  merge:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
-      - name: Download Digests Tag 1
-        uses: actions/download-artifact@v3
-        with:
-          name: digest_tag2
-          path: /tmp/digests/tag1
-
-      -   name: Download Digests Tag 2
-          uses: actions/download-artifact@v3
-          with:
-              name: digest_tag2
-              path: /tmp/digests/tag2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Docker Metadata Tag 1
-        id: meta_tag1
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp
-          tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-
-      - name: Docker Metadata Tag 2
-        id: meta_tag2
-        uses: docker/metadata-action@v5
-        with:
-            images: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi
-            tags: |
-                type=ref,event=branch
-                type=ref,event=tag
-                type=ref,event=pr
-                type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-
-      - name: Print Tag 1 Arrays
-        run: |
-          echo "Tag 1 Array :"
-          echo "${{ steps.meta_tag1.outputs.json.tags }}"
-
-      - name: Print Tag 2 Arrays
-        run: |
-          echo "Tag 2 Array :"
-          echo "${{ steps.meta_tag2.outputs.json.tags }}"
-
-#      - name: Print Tag 1 Array Elements
-#        run: |
-#          echo "Tag 1 Array Elements:"
-#          for tagArray in ${{ fromJSON(steps.meta_tag1.outputs.json).tags }}; do
-#             for tag in $tagArray; do
-#                echo "- $tag"
-#          done
-#
-#      - name: Print Tag 2 Array Elements
-#        run: |
-#          echo "Tag 2 Array Elements:"
-#          for tagArray in ${{ fromJSON(steps.meta_tag2.outputs.json).tags }}; do
-#             for tag in $tagArray; do
-#                echo "- $tag"
-#          done
-#
-#      - name: Print Tag 1 JSON
-#        run: |
-#            echo "Tag 1 JSON:"
-#            echo "${{ steps.meta_tag1.outputs.json }}"
-#
-#      - name: Print Tag 2 JSON
-#        run: |
-#            echo "Tag 2 JSON:"
-#            echo "${{ steps.meta_tag2.outputs.json }}"
-
-      - name: Create Manifest and Push Image Tag 1
-        working-directory: /tmp/digests/tag1
-        run: |
-            docker buildx imagetools create $(echo "-t ${{ steps.meta_tag1.outputs.tags }}") \
-                $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp@sha256:%s ' *)
-
-
-      - name: Create Manifest and Push Image Tag 2
-        working-directory: /tmp/digests/tag2
-        run: |
-            docker buildx imagetools create $(echo "-t ${{ steps.meta_tag2.outputs.tags }}") \
-            $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi@sha256:%s ' *)
-
-      - name: Inspect image tag 1
-        run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp:${{ steps.meta_tag1.outputs.version }}
-
-      - name: Inspect image tag 2
-        run: |
-            docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi:${{ steps.meta_tag2.outputs.version }}
+            - name: Build and Push Digest
+              id: build
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: Dockerfile
+                  platforms: linux/amd64, linux/arm64
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  push: true
