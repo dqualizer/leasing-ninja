@@ -109,11 +109,17 @@ jobs:
     needs:
       - build
     steps:
-      - name: Download Digests
+      - name: Download Digests Tag 1
         uses: actions/download-artifact@v3
         with:
           name: digests
-          path: /tmp/digests/*
+          path: /tmp/digests/tag1
+
+      -   name: Download Digests Tag 2
+          uses: actions/download-artifact@v3
+          with:
+              name: digests
+              path: /tmp/digests/tag2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
