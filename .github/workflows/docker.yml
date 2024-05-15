@@ -19,7 +19,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        context: .
         platform:
           - linux/amd64
           - linux/arm64
@@ -61,7 +60,7 @@ jobs:
         id: build_tag_1
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.context }}
+          context: .
           target: leasingNinja-webapp
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -86,7 +85,7 @@ jobs:
           id: build_tag_2
           uses: docker/build-push-action@v5
           with:
-              context: ${{ matrix.context }}
+              context: .
               target: leasingNinja-riskApi
               platforms: ${{ matrix.platform }}
               labels: ${{ steps.meta.outputs.labels }}
