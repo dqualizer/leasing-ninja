@@ -20,7 +20,7 @@ public class OutboundCommService {
     }
 
     //@Retryable only works when method is called by different object (see https://stackoverflow.com/questions/38212471/springboot-retryable-not-retrying)
-    @Retryable(maxAttempts = 4, include = {ConnectException.class}, backoff = @Backoff(delay = 1000))
+    //@Retryable(maxAttempts = 4, backoff = @Backoff(delay = 200))
     VoteResult getVoteResultFromRiskApi(RiskRequestDto riskRequestDto) {
         RestTemplate restTemplate = new RestTemplate();
 
