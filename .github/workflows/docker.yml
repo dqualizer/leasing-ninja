@@ -61,7 +61,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.context }}
-          target: webapp
+          target: leasingNinja-webapp
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -86,7 +86,7 @@ jobs:
           uses: docker/build-push-action@v5
           with:
               context: ${{ matrix.context }}
-              target: riskapi
+              target: leasingNinja-riskApi
               platforms: ${{ matrix.platform }}
               labels: ${{ steps.meta.outputs.labels }}
               tags: ${{ steps.meta.outputs.tags }}
