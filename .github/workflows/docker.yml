@@ -63,8 +63,8 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/WebApp
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/WebApp,push-by-digest=true,name-canonical=true,push=true
+          tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/webapp,push-by-digest=true,name-canonical=true,push=true
 
       - name: Export Digest Tag 1
         run: |
@@ -87,8 +87,8 @@ jobs:
               context: .
               platforms: ${{ matrix.platform }}
               labels: ${{ steps.meta.outputs.labels }}
-              tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/RiskApi
-              outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/RiskApi,push-by-digest=true,name-canonical=true,push=true
+              tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi
+              outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/riskapi,push-by-digest=true,name-canonical=true,push=true
 
       -   name: Export Digest Tag 2
           run: |
