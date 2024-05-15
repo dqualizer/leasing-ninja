@@ -60,11 +60,12 @@ jobs:
         id: build_tag_1
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ${{ matrix.context }}
+          target: webapp
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/webapp,push-by-digest=true,name-canonical=true,push=true
+          tags: ${{ steps.meta.outputs.tags }}
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/webapp,name-canonical=true,push=true
 
       - name: Export Digest Tag 1
         run: |
@@ -84,11 +85,12 @@ jobs:
           id: build_tag_2
           uses: docker/build-push-action@v5
           with:
-              context: .
+              context: ${{ matrix.context }}
+              target: riskapi
               platforms: ${{ matrix.platform }}
               labels: ${{ steps.meta.outputs.labels }}
-              tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi
-              outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/riskapi,push-by-digest=true,name-canonical=true,push=true
+              tags: ${{ steps.meta.outputs.tags }}
+              outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/riskapi,name-canonical=true,push=true
 
       -   name: Export Digest Tag 2
           run: |
