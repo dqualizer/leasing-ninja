@@ -153,11 +153,25 @@ jobs:
                 type=ref,event=pr
                 type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
+      - name: Print Tag 1 Array Elements
+        run: |
+          echo "Tag 1 Array Elements:"
+          for tag in ${{ fromJSON(steps.meta_tag1.outputs.json).tags }}; do
+            echo "- $tag"
+          done
+
+      - name: Print Tag 2 Array Elements
+        run: |
+            echo "Tag 2 Array Elements:"
+            for tag in ${{ fromJSON(steps.meta_tag2.outputs.json).tags }}; do
+              echo "- $tag"
+            done
+
       - name: Create Manifest and Push Image Tag 1
         working-directory: /tmp/digests/tag1
         run: |
-          docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ fromJSON(steps.meta_tag1.outputs.json).tags }})") \
-            $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp@sha256:%s ' *)
+              docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ fromJSON(steps.meta_tag1.outputs.json).tags }})") \
+                $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp@sha256:%s ' *)
 
 
       - name: Create Manifest and Push Image Tag 2
