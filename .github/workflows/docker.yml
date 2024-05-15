@@ -192,14 +192,14 @@ jobs:
       - name: Create Manifest and Push Image Tag 1
         working-directory: /tmp/digests/tag1
         run: |
-              docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ steps.meta_tag1.outputs.tags }})") \
+            docker buildx imagetools create $(echo "-t ${{ steps.meta_tag1.outputs.tags }}") \
                 $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp@sha256:%s ' *)
 
 
       - name: Create Manifest and Push Image Tag 2
         working-directory: /tmp/digests/tag2
         run: |
-          docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ steps.meta_tag2.outputs.tags }})") \
+            docker buildx imagetools create $(echo "-t ${{ steps.meta_tag2.outputs.tags }}") \
             $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi@sha256:%s ' *)
 
       - name: Inspect image tag 1
