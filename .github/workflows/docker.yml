@@ -156,50 +156,50 @@ jobs:
       - name: Print Tag 1 Arrays
         run: |
           echo "Tag 1 Array :"
-          echo "${{ fromJSON(steps.meta_tag1.outputs.json).tags }}"
+          echo "${{ steps.meta_tag1.outputs.json.tags }}"
 
       - name: Print Tag 2 Arrays
         run: |
           echo "Tag 2 Array :"
-          echo "${{ fromJSON(steps.meta_tag2.outputs.json).tags }}"
+          echo "${{ steps.meta_tag2.outputs.json.tags }}"
 
-      - name: Print Tag 1 Array Elements
-        run: |
-          echo "Tag 1 Array Elements:"
-          for tagArray in ${{ fromJSON(steps.meta_tag1.outputs.json).tags }}; do
-             for tag in $tagArray; do
-                echo "- $tag"
-          done
-
-      - name: Print Tag 2 Array Elements
-        run: |
-          echo "Tag 2 Array Elements:"
-          for tagArray in ${{ fromJSON(steps.meta_tag2.outputs.json).tags }}; do
-             for tag in $tagArray; do
-                echo "- $tag"
-          done
-
-      - name: Print Tag 1 JSON
-        run: |
-            echo "Tag 1 JSON:"
-            echo "${{ steps.meta_tag1.outputs.json }}"
-
-      - name: Print Tag 2 JSON
-        run: |
-            echo "Tag 2 JSON:"
-            echo "${{ steps.meta_tag2.outputs.json }}"
+#      - name: Print Tag 1 Array Elements
+#        run: |
+#          echo "Tag 1 Array Elements:"
+#          for tagArray in ${{ fromJSON(steps.meta_tag1.outputs.json).tags }}; do
+#             for tag in $tagArray; do
+#                echo "- $tag"
+#          done
+#
+#      - name: Print Tag 2 Array Elements
+#        run: |
+#          echo "Tag 2 Array Elements:"
+#          for tagArray in ${{ fromJSON(steps.meta_tag2.outputs.json).tags }}; do
+#             for tag in $tagArray; do
+#                echo "- $tag"
+#          done
+#
+#      - name: Print Tag 1 JSON
+#        run: |
+#            echo "Tag 1 JSON:"
+#            echo "${{ steps.meta_tag1.outputs.json }}"
+#
+#      - name: Print Tag 2 JSON
+#        run: |
+#            echo "Tag 2 JSON:"
+#            echo "${{ steps.meta_tag2.outputs.json }}"
 
       - name: Create Manifest and Push Image Tag 1
         working-directory: /tmp/digests/tag1
         run: |
-              docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ fromJSON(steps.meta_tag1.outputs.json).tags }})") \
+              docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ steps.meta_tag1.outputs.tags }})") \
                 $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/webapp@sha256:%s ' *)
 
 
       - name: Create Manifest and Push Image Tag 2
         working-directory: /tmp/digests/tag2
         run: |
-          docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ fromJSON(steps.meta_tag2.outputs.json).tags }})") \
+          docker buildx imagetools create $(jq -cr '.[] | map("-t " + .) | join(" ")' <<< "$(echo ${{ steps.meta_tag2.outputs.tags }})") \
             $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/riskapi@sha256:%s ' *)
 
       - name: Inspect image tag 1
