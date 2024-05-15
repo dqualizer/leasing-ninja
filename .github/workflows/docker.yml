@@ -56,29 +56,53 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Digest
-        id: build
+      - name: Build and Push Digest Tag 1
+        id: build_tag_1
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/WebApp
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/WebApp,push-by-digest=true,name-canonical=true,push=true
 
-      - name: Export Digest
+      - name: Export Digest Tag 1
         run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          mkdir -p /tmp/digests/tag1
+          digest="${{ steps.build_tag_1.outputs.digest }}"
+          touch "/tmp/digests/tag1/${digest#sha256:}"
 
-      - name: Upload Digest
+      - name: Upload Digest Tag 1
         uses: actions/upload-artifact@v3
         with:
-          name: digests
-          path: /tmp/digests/*
+          name: digests_tag1
+          path: /tmp/digests/tag1/*
           if-no-files-found: error
           retention-days: 1
+
+      -   name: Build and Push Digest Tag 2
+          id: build_tag_2
+          uses: docker/build-push-action@v5
+          with:
+              context: .
+              platforms: ${{ matrix.platform }}
+              labels: ${{ steps.meta.outputs.labels }}
+              tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}/RiskApi
+              outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/RiskApi,push-by-digest=true,name-canonical=true,push=true
+
+      -   name: Export Digest Tag 2
+          run: |
+              mkdir -p /tmp/digests/tag2
+              digest="${{ steps.build_tag_2.outputs.digest }}"
+              touch "/tmp/digests/tag2/${digest#sha256:}"
+
+      -   name: Upload Digest Tag 2
+          uses: actions/upload-artifact@v3
+          with:
+              name: digests_tag2
+              path: /tmp/digests/tag2/*
+              if-no-files-found: error
+              retention-days: 1
 
   merge:
     runs-on: ubuntu-latest
