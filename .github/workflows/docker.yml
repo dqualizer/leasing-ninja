@@ -167,6 +167,16 @@ jobs:
               echo "- $tag"
             done
 
+      - name: Print Tag 1 JSON
+        run: |
+            echo "Tag 1 JSON:"
+            echo "${{ steps.meta_tag1.outputs.json }}"
+
+      - name: Print Tag 2 JSON
+        run: |
+            echo "Tag 2 JSON:"
+            echo "${{ steps.meta_tag2.outputs.json }}"
+
       - name: Create Manifest and Push Image Tag 1
         working-directory: /tmp/digests/tag1
         run: |
