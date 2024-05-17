@@ -12,6 +12,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.ConnectException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class OutboundCommService {
@@ -29,7 +32,14 @@ public class OutboundCommService {
         headers.add("Header", "header1");
 
         // TODO change url if running inside docker, make port configurable
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:7081/api/vote");
+        Path cgroupPath = Paths.get("/proc/1/cgroup");
+        boolean isRunningInDocker = Files.exists(cgroupPath);
+        UriComponentsBuilder builder;
+        if (isRunningInDocker){
+            builder = UriComponentsBuilder.fromHttpUrl("http://leasingNinja-riskapi:7081/api/vote");
+        } else{
+            builder = UriComponentsBuilder.fromHttpUrl("http://localhost:7081/api/vote");
+        }
 
         HttpEntity<RiskRequestDto> entity = new HttpEntity<>(riskRequestDto, headers);
 
